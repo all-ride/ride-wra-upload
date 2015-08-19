@@ -11,6 +11,8 @@
     ],
     "require": {
         "ride/lib-common": ">=0.4.0",
+        "ride/lib-http": ">=0.4.0",
+        "ride/lib-http-jsonapi": ">=0.1.0",
         "ride/lib-system": ">=0.4.0",
         "ride/web": ">=0.6.0"
     },
