@@ -1,0 +1,47 @@
+{
+    "endpoints": [
+        {
+            "route": "api.upload",
+            "description": "Uploads a file to use with other endpoints",
+            "parameters": [
+                {
+                    "name": "file",
+                    "type": "file",
+                    "in": "form",
+                    "required": true
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Meta of the uploaded file",
+                    "type": "File"
+                },
+                "default": {
+                    "description": "An error",
+                    "type": "Error"
+                }
+            }
+        }
+    ],
+    "structs": {
+        "File": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "required": true,
+                    "description": "Name of the file"
+                },
+                "type": {
+                    "type": "string",
+                    "required": true,
+                    "description": "MIME-type"
+                },
+                "size": {
+                    "type": "integer",
+                    "required": true,
+                    "description": "Size in bytes"
+                }
+            }
+        }
+    }
+}

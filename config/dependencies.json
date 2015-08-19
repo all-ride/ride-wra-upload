@@ -1,0 +1,40 @@
+{
+    "dependencies": [
+        {
+            "class": "ride\\library\\system\\file\\File",
+            "id": "upload",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "system.directory.upload"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ride\\service\\UploadService",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "uploadDirectory",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\File",
+                                "id": "upload"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

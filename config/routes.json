@@ -1,0 +1,11 @@
+{
+    "routes": [
+        {
+            "path": "api/v1/uploads",
+            "controller": "ride\\web\\rest\\controller\\UploadController",
+            "action": "uploadAction",
+            "methods": "POST",
+            "id": "api.upload"
+        }
+    ]
+}
