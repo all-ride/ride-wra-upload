@@ -2,7 +2,7 @@
     "name": "ride/wra-upload",
     "description": "API implementation to upload files to a Ride application",
     "license": "MIT",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "authors": [
         {
             "name": "Joris Vandeweerd",
