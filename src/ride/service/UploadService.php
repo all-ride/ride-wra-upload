@@ -89,10 +89,6 @@ class UploadService {
      * error occured
      */
     protected function checkUploadFile(array $file) {
-        if (!isset($file['name']) || !isset($file['tmp_name']) || !array_key_exists('error', $file)) {
-            throw new FileSystemException('Invalid file structure provided');
-        }
-
         switch ($file['error']) {
             case UPLOAD_ERR_OK:
                 return;
