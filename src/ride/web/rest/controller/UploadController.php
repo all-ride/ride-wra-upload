@@ -30,7 +30,11 @@ class UploadController extends AbstractController {
             $document->addError($api->createError(Response::STATUS_CODE_BAD_REQUEST, 'file.upload.none', 'No file uploaded'));
         } else {
             try {
-                $uploadedFile = $uploadService->uploadFile($file);
+                if (!isset($file['name']) || !isset($file['tmp_name']) || !array_key_exists('error', $file)) {
+                    throw new FileSystemException('Invalid file structure provided');
+                }
+
+                $uploadedFile = $uploadService->handleFileUpload($file['name'], $file['tmp_name'], $file['error']);
 
                 $resource = $api->createResource('uploads', $uploadedFile->getName());
                 $resource->setAttribute('name', $uploadedFile->getName());
