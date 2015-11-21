@@ -58,22 +58,24 @@ class UploadService {
 
     /**
      * Handles a file upload
-     * @param array $file File upload structure
+     * @param string $fileNameOrg Original filename
+     * @param string $fileNameTmp Temporary filename
+     * @param int $fileError File error code
      * @return \ride\library\system\file\File
      * @throws \ride\library\system\exception\FileSystemException
      */
-    public function uploadFile(array $file) {
-        $this->checkUploadFile($file);
+    public function handleFileUpload($fileNameOrg, $fileNameTmp, $fileError) {
+        $this->checkUploadFile($fileNameOrg, $fileNameTmp, $fileError);
 
         // prepare file name
-        $uploadFileName = StringHelper::safeString($file['name'], '_', false);
+        $uploadFileName = StringHelper::safeString($fileNameOrg, '_', false);
 
         $uploadFile = $this->uploadDirectory->getChild($uploadFileName);
         $uploadFile = $uploadFile->getCopyFile();
 
         // move file from temp to upload path
-        if (!move_uploaded_file($file['tmp_name'], $uploadFile->getPath())) {
-            throw new FileSystemException('Could not move the uploaded file ' . $file['tmp_name'] . ' to ' . $uploadFile->getPath());
+        if (!move_uploaded_file($fileNameTmp, $uploadFile->getPath())) {
+            throw new FileSystemException('Could not move the uploaded file ' . $fileNameTmp . ' to ' . $uploadFile->getPath());
         }
 
         $uploadFile->setPermissions(0644);
@@ -83,47 +85,46 @@ class UploadService {
 
     /**
      * Checks whether a file upload error occured
-     * @param array $file File upload structure
+     * @param int $fileError File error code
      * @return null
      * @throws \ride\library\system\exception\FileSystemException when a upload
      * error occured
      */
-    protected function checkUploadFile(array $file) {
-        switch ($file['error']) {
-            case UPLOAD_ERR_OK:
-                return;
-            case UPLOAD_ERR_NO_FILE:
-                $message = 'No file uploaded';
+    protected function checkUploadFile($fileError) {
+        if ($fileError != UPLOAD_ERR_OK) {
+            switch ($fileError) {
+                case UPLOAD_ERR_NO_FILE:
+                    $message = 'No file uploaded';
 
-                break;
-            case UPLOAD_ERR_INI_SIZE:
-            case UPLOAD_ERR_FORM_SIZE:
-                $message = 'The uploaded file exceeds the maximum upload size';
+                    break;
+                case UPLOAD_ERR_INI_SIZE:
+                case UPLOAD_ERR_FORM_SIZE:
+                    $message = 'The uploaded file exceeds the maximum upload size';
 
-                break;
-            case UPLOAD_ERR_INI_SIZE:
-                $message = 'The uploaded file was only partially uploaded';
+                    break;
+                case UPLOAD_ERR_INI_SIZE:
+                    $message = 'The uploaded file was only partially uploaded';
 
-                break;
-            case UPLOAD_ERR_NO_TMP_DIR:
-                $message = 'No temporary directory to upload the file to';
+                    break;
+                case UPLOAD_ERR_NO_TMP_DIR:
+                    $message = 'No temporary directory to upload the file to';
 
-                break;
-            case UPLOAD_ERR_CANT_WRITE:
-                $message = 'Failed to write file to disk';
+                    break;
+                case UPLOAD_ERR_CANT_WRITE:
+                    $message = 'Failed to write file to disk';
 
-                break;
-            case UPLOAD_ERR_EXTENSION:
-                $message = 'The upload was stopped by a PHP extension';
+                    break;
+                case UPLOAD_ERR_EXTENSION:
+                    $message = 'The upload was stopped by a PHP extension';
 
-                break;
-            default:
-                $message = 'The upload was stopped by an unknown error';
+                    break;
+                default:
+                    $message = 'The upload was stopped by an unknown error';
 
-                break;
+                    break;
+            }
+
+            throw new FileSystemException($message);
         }
-
-        throw new FileSystemException($message);
     }
-
 }

@@ -34,7 +34,7 @@ class UploadController extends AbstractController {
                     throw new FileSystemException('Invalid file structure provided');
                 }
 
-                $uploadedFile = $uploadService->uploadFile($file);
+                $uploadedFile = $uploadService->handleFileUpload($file['name'], $file['tmp_name'], $file['error']);
 
                 $resource = $api->createResource('uploads', $uploadedFile->getName());
                 $resource->setAttribute('name', $uploadedFile->getName());
