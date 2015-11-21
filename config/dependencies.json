@@ -2,7 +2,7 @@
     "dependencies": [
         {
             "class": "ride\\library\\system\\file\\File",
-            "id": "upload",
+            "id": "upload_temporary",
             "calls": [
                 {
                     "method": "__construct",
@@ -19,17 +19,69 @@
             ]
         },
         {
+            "class": "ride\\library\\system\\file\\File",
+            "id": "upload_permanent",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "system.directory.user"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "class": "ride\\service\\UploadService",
             "calls": [
                 {
                     "method": "__construct",
                     "arguments": [
                         {
-                            "name": "uploadDirectory",
+                            "name": "uploadDirectoryTemporary",
                             "type": "dependency",
                             "properties": {
                                 "interface": "ride\\library\\system\\file\\File",
-                                "id": "upload"
+                                "id": "upload_temporary"
+                            }
+                        },
+                        {
+                            "name": "uploadDirectoryPermanent",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\File",
+                                "id": "upload_permanent"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addAbsolutePath",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "call",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\browser\\FileBrowser",
+                                "method": "getApplicationDirectory"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addAbsolutePath",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "call",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\browser\\FileBrowser",
+                                "method": "getPublicDirectory"
                             }
                         }
                     ]
