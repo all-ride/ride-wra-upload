@@ -32,6 +32,12 @@ class UploadService {
     protected $uploadDirectoryTemporary;
 
     /**
+     * Permanent upload directory
+     * @var \ride\library\system\file\File
+     */
+    protected $uploadDirectoryPermanent;
+
+    /**
      * Absolute paths which should be made relative
      * @var array
      */
@@ -42,17 +48,20 @@ class UploadService {
      * @param \ride\library\system\file\FileSystem $fileSystem
      * @param \ride\web\mime\MimeResolver $mimeResolver
      * @param \ride\library\system\file\File $uploadDirectoryTemporary
+     * @param \ride\library\system\file\File $uploadDirectoryPermanent
      * @return null
      */
     public function __construct(
         FileSystem $fileSystem,
         MimeResolver $mimeResolver,
-        File $uploadDirectoryTemporary
+        File $uploadDirectoryTemporary,
+        File $uploadDirectoryPermanent
     ) {
         $this->fileSystem = $fileSystem;
         $this->mimeResolver = $mimeResolver;
 
         $this->setUploadDirectoryTemporary($uploadDirectoryTemporary);
+        $this->setUploadDirectoryPermanent($uploadDirectoryPermanent);
     }
 
     /**
@@ -75,6 +84,40 @@ class UploadService {
      */
     public function getUploadDirectoryTemporary() {
         return $this->uploadDirectoryTemporary;
+    }
+
+    /**
+     * Sets the permanent upload directory
+     * @return null
+     */
+    protected function setUploadDirectoryPermanent(File $directory) {
+        if (!$directory->exists()) {
+            $directory->create();
+        } elseif (!$directory->isDirectory()) {
+            throw new FileSystemException('Could not set upload directory: ' . $directory . ' is not a directory');
+        }
+
+        $this->uploadDirectoryPermanent = $directory;
+    }
+
+    /**
+     * Gets the permanent upload directory
+     * @return \ride\library\system\file\File
+     */
+    public function getUploadDirectoryPermanent() {
+        return $this->uploadDirectoryPermanent;
+    }
+
+    /**
+     * Move temporary file to the permanent directory, which can be overridden
+     * @param \ride\library\system\file\File $oldFile
+     * @param \ride\library\system\file\File $permanentDirectory
+     * @return \ride\library\system\file\File
+     */
+    public function moveTemporaryToPermanent(File $oldFile, File $permanentDirectory) {
+        $newFile = $permanentDirectory->getChild($oldFile->getName());
+        $this->fileSystem->move($oldFile, $newFile);
+        return $newFile;
     }
 
     /**

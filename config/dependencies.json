@@ -19,6 +19,24 @@
             ]
         },
         {
+            "class": "ride\\library\\system\\file\\File",
+            "id": "upload_permanent",
+            "calls": [
+                {
+                    "method": "__construct",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "parameter",
+                            "properties": {
+                                "key": "system.directory.user"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "class": "ride\\service\\UploadService",
             "calls": [
                 {
@@ -30,6 +48,14 @@
                             "properties": {
                                 "interface": "ride\\library\\system\\file\\File",
                                 "id": "upload_temporary"
+                            }
+                        },
+                        {
+                            "name": "uploadDirectoryPermanent",
+                            "type": "dependency",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\File",
+                                "id": "upload_permanent"
                             }
                         }
                     ]
