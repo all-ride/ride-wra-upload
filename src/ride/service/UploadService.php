@@ -191,6 +191,43 @@ class UploadService {
     }
 
     /**
+     * Handles a file upload via a dataURI string
+     * @param string $fileName Filename
+     * @param string $dataUri DataURI with file content
+     * @return \ride\library\system\file\File
+     * @throws \ride\library\system\exception\FileSystemException
+     */
+    public function handleDataUri($fileName, $dataUriString) {
+        // decode dataUri
+        $uploadFile = null;
+        $dataUri = null;
+        try {
+            $dataUri = DataUri::decode($dataUriString);
+        } catch (HttpException $err) { }
+
+        if ($dataUri instanceof DataUri) {
+            // add extension based on claimed mime type
+            $mimeType = $dataUri->getMimeType();
+            $mimeExtension = $this->mimeResolver->getExtensionForMimeType($mimeType);
+            if (is_string($mimeExtension)) {
+                $fileName .= '.' . $mimeExtension;
+            }
+
+            // prepare file name
+            $fileName = StringHelper::safeString($fileName, '_', false);
+
+            $uploadFile = $this->getUploadDirectoryTemporary()->getChild($fileName);
+            $uploadFile = $uploadFile->getCopyFile();
+
+            $uploadFile->write($dataUri->getData());
+
+            $uploadFile->setPermissions(0644);
+        }
+
+        return $uploadFile;
+    }
+
+    /**
      * Checks whether a file upload error occured
      * @param int $fileError File error code
      * @return null
