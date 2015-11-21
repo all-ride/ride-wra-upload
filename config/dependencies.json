@@ -33,6 +33,32 @@
                             }
                         }
                     ]
+                },
+                {
+                    "method": "addAbsolutePath",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "call",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\browser\\FileBrowser",
+                                "method": "getApplicationDirectory"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "method": "addAbsolutePath",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "call",
+                            "properties": {
+                                "interface": "ride\\library\\system\\file\\browser\\FileBrowser",
+                                "method": "getPublicDirectory"
+                            }
+                        }
+                    ]
                 }
             ]
         }

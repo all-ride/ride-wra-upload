@@ -12,6 +12,12 @@ use ride\library\StringHelper;
 class UploadService {
 
     /**
+     * Absolute paths which should be made relative
+     * @var array
+     */
+    protected $absolutePaths = array();
+
+    /**
      * Constructs a new file upload service
      * @param \ride\library\system\file\File $uploadDirectory
      * @return null
@@ -40,6 +46,35 @@ class UploadService {
      */
     public function getUploadDirectory() {
         return $this->uploadDirectory;
+    }
+
+    /**
+     * Adds a absolute path
+     * @param string|\ride\library\system\file\File $path
+     * @return null
+     */
+    public function addAbsolutePath($path) {
+        if ($path instanceof File) {
+            $path = $path->getAbsolutePath();
+        }
+
+        $this->absolutePaths[] = $path;
+    }
+
+    /**
+     * Get the relative path of a file
+     * @param \ride\library\system\file\File $file
+     * @return string
+     */
+    public function getRelativePath(File $file) {
+        $relativePath = $file->getAbsolutePath();
+        foreach ($this->absolutePaths as $absolutePath) {
+            if (strpos($relativePath, $absolutePath) === 0) {
+                $relativePath = str_replace($absolutePath . '/', '', $relativePath);
+                break;
+            }
+        }
+        return $relativePath;
     }
 
     /**
