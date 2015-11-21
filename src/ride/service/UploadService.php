@@ -3,13 +3,33 @@
 namespace ride\service;
 
 use ride\library\system\exception\FileSystemException;
+use ride\library\system\file\FileSystem;
 use ride\library\system\file\File;
+use ride\web\mime\MimeResolver;
 use ride\library\StringHelper;
+use ride\library\http\DataUri;
+use ride\library\http\exception\HttpException;
 
 /**
  * Service to process file uploads
  */
 class UploadService {
+
+    /**
+     * @var \ride\library\system\file\FileSystem
+     */
+    protected $fileSystem;
+
+    /**
+     * @var \ride\web\mime\MimeResolver
+     */
+    protected $mimeResolver;
+
+    /**
+     * Temporary upload directory
+     * @var \ride\library\system\file\File
+     */
+    protected $uploadDirectoryTemporary;
 
     /**
      * Absolute paths which should be made relative
@@ -19,33 +39,42 @@ class UploadService {
 
     /**
      * Constructs a new file upload service
-     * @param \ride\library\system\file\File $uploadDirectory
+     * @param \ride\library\system\file\FileSystem $fileSystem
+     * @param \ride\web\mime\MimeResolver $mimeResolver
+     * @param \ride\library\system\file\File $uploadDirectoryTemporary
      * @return null
      */
-    public function __construct(File $uploadDirectory) {
-        $this->setUploadDirectory($uploadDirectory);
+    public function __construct(
+        FileSystem $fileSystem,
+        MimeResolver $mimeResolver,
+        File $uploadDirectoryTemporary
+    ) {
+        $this->fileSystem = $fileSystem;
+        $this->mimeResolver = $mimeResolver;
+
+        $this->setUploadDirectoryTemporary($uploadDirectoryTemporary);
     }
 
     /**
-     * Sets the upload directory
-     * @return \ride\library\system\file\File
+     * Sets the temporary upload directory
+     * @return null
      */
-    public function setUploadDirectory(File $uploadDirectory) {
-        if (!$uploadDirectory->exists()) {
-            $uploadDirectory->create();
-        } elseif (!$uploadDirectory->isDirectory()) {
-            throw new FileSystemException('Could not set upload directory: ' . $file . ' is not a directory');
+    protected function setUploadDirectoryTemporary(File $directory) {
+        if (!$directory->exists()) {
+            $directory->create();
+        } elseif (!$directory->isDirectory()) {
+            throw new FileSystemException('Could not set upload directory: ' . $directory . ' is not a directory');
         }
 
-        $this->uploadDirectory = $uploadDirectory;
+        $this->uploadDirectoryTemporary = $directory;
     }
 
     /**
-     * Gets the upload directory
+     * Gets the temporary upload directory
      * @return \ride\library\system\file\File
      */
-    public function getUploadDirectory() {
-        return $this->uploadDirectory;
+    public function getUploadDirectoryTemporary() {
+        return $this->uploadDirectoryTemporary;
     }
 
     /**
@@ -82,8 +111,8 @@ class UploadService {
      * @param string $name Name of the file
      * @return \ride\library\system\file\File|null
      */
-    public function getFile($name) {
-        $file = $this->uploadDirectory->getChild($name);
+    public function getTemporaryFile($name) {
+        $file = $this->getUploadDirectoryTemporary()->getChild($name);
         if (!$file->exists()) {
             return null;
         }
@@ -105,7 +134,7 @@ class UploadService {
         // prepare file name
         $uploadFileName = StringHelper::safeString($fileNameOrg, '_', false);
 
-        $uploadFile = $this->uploadDirectory->getChild($uploadFileName);
+        $uploadFile = $this->getUploadDirectoryTemporary()->getChild($uploadFileName);
         $uploadFile = $uploadFile->getCopyFile();
 
         // move file from temp to upload path

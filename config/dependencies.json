@@ -2,7 +2,7 @@
     "dependencies": [
         {
             "class": "ride\\library\\system\\file\\File",
-            "id": "upload",
+            "id": "upload_temporary",
             "calls": [
                 {
                     "method": "__construct",
@@ -25,11 +25,11 @@
                     "method": "__construct",
                     "arguments": [
                         {
-                            "name": "uploadDirectory",
+                            "name": "uploadDirectoryTemporary",
                             "type": "dependency",
                             "properties": {
                                 "interface": "ride\\library\\system\\file\\File",
-                                "id": "upload"
+                                "id": "upload_temporary"
                             }
                         }
                     ]
