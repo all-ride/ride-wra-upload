@@ -116,7 +116,9 @@ class UploadService {
      */
     public function moveTemporaryToPermanent(File $oldFile, File $permanentDirectory) {
         $newFile = $permanentDirectory->getChild($oldFile->getName());
+
         $this->fileSystem->move($oldFile, $newFile);
+
         return $newFile;
     }
 
@@ -172,7 +174,7 @@ class UploadService {
      * @throws \ride\library\system\exception\FileSystemException
      */
     public function handleFileUpload($fileNameOrg, $fileNameTmp, $fileError) {
-        $this->checkUploadFile($fileNameOrg, $fileNameTmp, $fileError);
+        $this->checkUploadFile($fileNameOrg);
 
         // prepare file name
         $uploadFileName = StringHelper::safeString($fileNameOrg, '_', false);
