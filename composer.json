@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "ride/app-mime": ">=0.2.0",
         "ride/lib-common": ">=0.4.0",
         "ride/lib-http": ">=0.4.0",
         "ride/lib-http-jsonapi": ">=0.1.0",

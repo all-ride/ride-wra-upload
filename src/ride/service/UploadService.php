@@ -5,10 +5,11 @@ namespace ride\service;
 use ride\library\system\exception\FileSystemException;
 use ride\library\system\file\FileSystem;
 use ride\library\system\file\File;
-use ride\web\mime\MimeResolver;
 use ride\library\StringHelper;
 use ride\library\http\DataUri;
 use ride\library\http\exception\HttpException;
+
+use ride\service\MimeService;
 
 /**
  * Service to process file uploads
@@ -21,9 +22,9 @@ class UploadService {
     protected $fileSystem;
 
     /**
-     * @var \ride\web\mime\MimeResolver
+     * @var \ride\service\MimeService
      */
-    protected $mimeResolver;
+    protected $mimeService;
 
     /**
      * Temporary upload directory
@@ -46,19 +47,19 @@ class UploadService {
     /**
      * Constructs a new file upload service
      * @param \ride\library\system\file\FileSystem $fileSystem
-     * @param \ride\web\mime\MimeResolver $mimeResolver
+     * @param \ride\service\MimeService $mimeService
      * @param \ride\library\system\file\File $uploadDirectoryTemporary
      * @param \ride\library\system\file\File $uploadDirectoryPermanent
      * @return null
      */
     public function __construct(
         FileSystem $fileSystem,
-        MimeResolver $mimeResolver,
+        MimeService $mimeService,
         File $uploadDirectoryTemporary,
         File $uploadDirectoryPermanent
     ) {
         $this->fileSystem = $fileSystem;
-        $this->mimeResolver = $mimeResolver;
+        $this->mimeService = $mimeService;
 
         $this->setUploadDirectoryTemporary($uploadDirectoryTemporary);
         $this->setUploadDirectoryPermanent($uploadDirectoryPermanent);
@@ -210,7 +211,7 @@ class UploadService {
         if ($dataUri instanceof DataUri) {
             // add extension based on claimed mime type
             $mimeType = $dataUri->getMimeType();
-            $mimeExtension = $this->mimeResolver->getExtensionForMimeType($mimeType);
+            $mimeExtension = $this->mimeService->getExtensionForMediaType($mimeType);
             if (is_string($mimeExtension)) {
                 $fileName .= '.' . $mimeExtension;
             }
